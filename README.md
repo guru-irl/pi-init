@@ -23,7 +23,7 @@ SKIP_COPILOT_CLI=1 bash <(curl -fsSL https://raw.githubusercontent.com/guru-irl/
 
 ## What it installs
 
-- Node (via Volta) + pi (`@earendil-works/pi-coding-agent`)
+- Node (system package manager, if missing) + pi (`@earendil-works/pi-coding-agent`)
 - pi packages: `pi-subagents`, `context-mode`, `pi-todo-sqlite` (durable per-project todos + `/todos`)
 - `pi-ctx-ui` local extension (nicer `ctx_*` tool UI)
 - context-mode MCP server (global) for any agent

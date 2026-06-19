@@ -6,7 +6,7 @@
 #   bash <(curl -fsSL https://raw.githubusercontent.com/guru-irl/pi-init/main/init.sh)
 #
 # One-shot setup for a new machine:
-#   - Node (via Volta) + pi (@earendil-works/pi-coding-agent)
+#   - Node (system package manager, only if missing) + pi (global npm install)
 #   - pi packages: pi-subagents, context-mode, pi-todo-sqlite (durable per-project todos)
 #   - pi-ctx-ui local extension (nicer ctx_* tool UI)
 #   - context-mode MCP server (global) for any agent
@@ -34,18 +34,34 @@ have() { command -v "$1" >/dev/null 2>&1; }
 
 # ---------------------------------------------------------------------------
 ensure_node() {
-  if have node; then log "node present: $(node -v)"; return; fi
-  log "Installing Node via Volta..."
-  if ! have volta; then curl -fsSL https://get.volta.sh | bash; fi
-  export VOLTA_HOME="${VOLTA_HOME:-$HOME/.volta}"; export PATH="$VOLTA_HOME/bin:$PATH"
-  volta install node
+  local need=22  # pi-todo-sqlite uses node:sqlite (needs Node >= 22.5)
+  if have node && have npm; then
+    local major; major="$(node -v | sed 's/^v//; s/\..*//')"
+    if [ "${major:-0}" -ge "$need" ]; then log "node present: $(node -v)"; return; fi
+    warn "node $(node -v) is older than v${need} (node:sqlite needs >= v22.5); installing a newer Node"
+  else
+    log "Node/npm not found; installing Node >= v${need} the regular way (system package manager)..."
+  fi
+  if have brew; then brew install node
+  elif have apt-get; then curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash - && sudo apt-get install -y nodejs
+  elif have dnf; then curl -fsSL https://rpm.nodesource.com/setup_22.x | sudo -E bash - && sudo dnf install -y nodejs
+  elif have pacman; then sudo pacman -Sy --noconfirm nodejs npm
+  elif have zypper; then sudo zypper install -y nodejs22 || sudo zypper install -y nodejs
+  elif have apk; then sudo apk add --no-cache nodejs npm
+  else warn "No supported package manager found. Install Node >= v${need} from https://nodejs.org and re-run."; exit 1
+  fi
+  have node && have npm || { warn "Node/npm still not on PATH after install."; exit 1; }
+  log "node now: $(node -v) (npm $(npm -v))"
 }
 
 ensure_pi() {
   if have pi; then log "pi present: $(pi --version 2>/dev/null | head -1)"; return; fi
-  log "Installing pi via Volta..."
-  export VOLTA_HOME="${VOLTA_HOME:-$HOME/.volta}"; export PATH="$VOLTA_HOME/bin:$PATH"
-  volta install @earendil-works/pi-coding-agent
+  log "Installing pi globally via npm (npm install -g @earendil-works/pi-coding-agent)..."
+  if ! npm install -g --ignore-scripts @earendil-works/pi-coding-agent; then
+    warn "Global install failed (likely npm prefix permissions); retrying with sudo..."
+    sudo npm install -g --ignore-scripts @earendil-works/pi-coding-agent
+  fi
+  have pi || warn "pi installed but not on PATH; add \"\$(npm prefix -g)/bin\" to your PATH."
 }
 
 ensure_gh_and_auth() {
