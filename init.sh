@@ -133,9 +133,10 @@ applies, prefer it over ad-hoc approaches.
 
 **Before acting on any non-trivial request — reflexively, before your first tool
 call:** (1) load and follow `using-superpowers` (read its `SKILL.md`) plus any
-other applicable skill, and (2) load and follow the `context-mode` skill, then
-default verbose shell/file work to its `ctx_*` tools (see Token performance).
-These are the baseline workflow on this machine, not optional add-ons.
+other applicable skill, (2) load and follow the `context-mode` skill, then
+default verbose shell/file work to its `ctx_*` tools (see Token performance), and
+(3) before any delegation, load and follow the `pi-subagents` skill. These are
+the baseline workflow on this machine, not optional add-ons.
 
 ## Skills (superpowers) — invoke before acting
 
@@ -152,7 +153,9 @@ reading its `SKILL.md` (resolve a skill's relative paths against its own dir).
 ## Delegation — `subagent` (pi-subagents)
 
 For recon, parallel work, review, and implementation handoffs, delegate with the
-`subagent(...)` tool. Builtin roles: `worker` (implement), `reviewer` (review,
+`subagent(...)` tool — load and follow the `pi-subagents` skill before your first
+delegation (it covers single / chain / parallel / async, forked context, and
+intercom coordination). Builtin roles: `worker` (implement), `reviewer` (review,
 use `context: "fresh"`), `scout` (recon), `planner`, `context-builder`,
 `researcher`, `oracle`, `delegate`. Keep a single writer at a time; give
 review-only children fresh context and tell them not to edit source. Pass
