@@ -131,6 +131,12 @@ configure_pi() {
 This machine is set up with a specific toolset. Use it. When a capability below
 applies, prefer it over ad-hoc approaches.
 
+**Before acting on any non-trivial request — reflexively, before your first tool
+call:** (1) load and follow `using-superpowers` (read its `SKILL.md`) plus any
+other applicable skill, and (2) default verbose shell/file work to the
+context-mode `ctx_*` tools (see Token performance). These are the baseline
+workflow on this machine, not optional add-ons.
+
 ## Skills (superpowers) — invoke before acting
 
 A superpowers skill library is installed. **At the start of any non-trivial task,
@@ -156,14 +162,27 @@ architecture/review), and `skill:` to make a child follow an execution skill
 
 ## Token performance — context-mode (`ctx_*`)
 
-Prefer context-mode tools over raw read/bash whenever output is large; the bytes
-stay sandboxed and only what you print/query enters context:
-- Large command output (diffs, test runs, logs, repo-wide greps) → `ctx_execute`
-  / `ctx_batch_execute`.
+context-mode routing is always on (it blocks raw HTTP-flooding commands). Routing
+**everything else is your job**: prefer `ctx_*` over raw read/bash whenever output
+could be large — the bytes stay sandboxed and only what you print/query enters
+context.
+
+**Default rule: if a command could print more than ~10 lines, run it through
+`ctx_execute` (several related commands → `ctx_batch_execute`) and print only what
+you need.** This explicitly includes, and is not limited to:
+- `git` (log, diff, status, show, blame), `gh` (issue/pr/run list & view, `api`),
+  and `az` CLI — these routinely exceed 10 lines, so default them to `ctx_execute`.
+- `kubectl`, `docker`, `npm`/`pnpm`/`yarn`, dependency/audit queries, and any
+  repo-wide `grep`/`find`/`ls -R`.
+- Test runs, builds, and logs → `ctx_execute` / `ctx_batch_execute` (add an
+  `intent` so large output is indexed and you get back only the relevant slice).
 - Analyze/summarize a large file you won't edit → `ctx_execute_file` (use plain
   `read` when you will edit, so edits match exact text).
 - Web docs → `ctx_fetch_and_index` then `ctx_search`.
 - Repeatedly referenced plan/spec/docs → `ctx_index` once, then `ctx_search`.
+
+Use plain `bash` only for short commands (≪10 lines) whose full output you want
+verbatim — e.g. `whoami`, `pwd`, a one-line `git rev-parse`, `gh auth status`.
 
 ## Task tracking — `todo` (durable, SQLite-backed)
 
