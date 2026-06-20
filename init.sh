@@ -133,9 +133,9 @@ applies, prefer it over ad-hoc approaches.
 
 **Before acting on any non-trivial request — reflexively, before your first tool
 call:** (1) load and follow `using-superpowers` (read its `SKILL.md`) plus any
-other applicable skill, and (2) default verbose shell/file work to the
-context-mode `ctx_*` tools (see Token performance). These are the baseline
-workflow on this machine, not optional add-ons.
+other applicable skill, and (2) load and follow the `context-mode` skill, then
+default verbose shell/file work to its `ctx_*` tools (see Token performance).
+These are the baseline workflow on this machine, not optional add-ons.
 
 ## Skills (superpowers) — invoke before acting
 
@@ -179,10 +179,15 @@ you need.** This explicitly includes, and is not limited to:
 - Analyze/summarize a large file you won't edit → `ctx_execute_file` (use plain
   `read` when you will edit, so edits match exact text).
 - Web docs → `ctx_fetch_and_index` then `ctx_search`.
-- Repeatedly referenced plan/spec/docs → `ctx_index` once, then `ctx_search`.
+- Reference material you'll consult more than once (specs, plans, API docs, a
+  `docs/` dir, long READMEs) → `ctx_index(path: …, source: "label")` once, then
+  `ctx_search(source: "label")`. Index files by **path**, never paste large text
+  via `ctx_index(content: …)`, and don't re-index output already in context.
 
 Use plain `bash` only for short commands (≪10 lines) whose full output you want
 verbatim — e.g. `whoami`, `pwd`, a one-line `git rev-parse`, `gh auth status`.
+The `context-mode` skill (loaded up front) carries the full decision tree, Bash
+whitelist, language selection, and ctx_index / Playwright rules — follow it.
 
 ## Task tracking — `todo` (durable, SQLite-backed)
 
