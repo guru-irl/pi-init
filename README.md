@@ -1,9 +1,12 @@
 # pi-init
 
-One-shot bootstrap for a fresh machine: [pi](https://github.com/earendil-works) +
-[superpowers skills](https://github.com/guru-irl/superpowers) + context-mode
-(`ctx_*`) + pi-subagents + [pi-todo-sqlite](https://github.com/guru-irl/pi-todo-sqlite)
-+ [pi-ctx-ui](https://github.com/guru-irl/pi-ctx-ui), plus optional GitHub Copilot CLI wiring.
+One-shot **spider-first** bootstrap for a fresh machine: [pi](https://github.com/earendil-works) +
+[spider](https://github.com/guru-irl/spider) (the unified extension — subagents, memory, unified
+search, todos, sandboxed exec, web fetch) + [superpowers skills](https://github.com/guru-irl/superpowers),
+plus optional GitHub Copilot CLI wiring.
+
+spider **replaces** the old `pi-subagents`, `context-mode` (`ctx_*`), and `pi-todo-sqlite`
+extensions — this script installs spider instead and prunes those from an existing setup.
 
 ## Quick install
 
@@ -19,16 +22,22 @@ logins work (unlike `curl … | bash`).
 ```bash
 GH_TOKEN=ghp_xxx bash <(curl -fsSL https://raw.githubusercontent.com/guru-irl/pi-init/main/init.sh)   # non-interactive gh auth
 SKIP_COPILOT_CLI=1 bash <(curl -fsSL https://raw.githubusercontent.com/guru-irl/pi-init/main/init.sh) # skip Copilot CLI
+SPIDER_REPO=… SPIDER_DIR=… bash <(curl …)                                                             # override spider clone source/dir
 ```
 
 ## What it installs
 
 - Node (system package manager, if missing) + pi (`@earendil-works/pi-coding-agent`)
-- pi packages: `pi-subagents`, `context-mode`, `pi-todo-sqlite` (durable per-project todos + `/todos`)
-- `pi-ctx-ui` local extension (nicer `ctx_*` tool UI)
-- context-mode MCP server (global) for any agent
+- **spider** — cloned to `~/.local/share/spider`, built, and dev-linked into pi
+  (`~/.pi/agent/extensions/spider-dev.ts`). One extension for subagents, memory,
+  unified search, durable todos (`/todos`), sandboxed exec, and web fetch, on a
+  shared SQLite DB.
+- companion pi packages: `pi-intercom`, `pi-prompt-template-model`
 - superpowers skills (`guru-irl/superpowers`) for pi / Claude Code / Copilot CLI
-- GitHub CLI auth + optional GitHub Copilot CLI wiring
-- pi global bootstrap prompt (`~/.pi/agent/AGENTS.md`)
+- GitHub CLI auth + optional GitHub Copilot CLI
+- spider-managed global guide (`~/.pi/agent/AGENTS.md`)
 
-The script is idempotent — safe to re-run to update.
+Re-running migrates an old setup: it prunes `pi-subagents`, `context-mode`, and
+`pi-todo-sqlite` from `~/.pi/agent/settings.json` (backed up to `settings.json.bak`).
+
+The script is idempotent — safe to re-run to update (spider is `git pull`ed + rebuilt).
