@@ -29,7 +29,7 @@ SPIDER_REPO=… SPIDER_DIR=… bash <(curl …)                                 
 
 - Node (system package manager, if missing) + pi (`@earendil-works/pi-coding-agent`)
 - **spider** — cloned to `~/.local/share/spider`, built, and dev-linked into pi
-  (`~/.pi/agent/extensions/spider-dev.ts`). One extension for subagents, memory,
+  (`~/.pi/agent/extensions/spider.ts`). One extension for subagents, memory,
   unified search, durable todos (`/todos`), sandboxed exec, and web fetch, on a
   shared SQLite DB.
 - companion pi packages: `pi-intercom`, `pi-prompt-template-model`

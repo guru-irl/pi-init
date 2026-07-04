@@ -106,8 +106,8 @@ ensure_spider() {
     log "Building spider (npm install + build; native better-sqlite3/sqlite-vec)..."
     npm install || { warn "spider npm install failed — fix and re-run"; return 1; }
     npm run build || { warn "spider build failed — fix and re-run"; return 1; }
-    log "Linking spider into pi (dev:link → ~/.pi/agent/extensions/spider-dev.ts)..."
-    npm run dev:link || warn "spider dev:link failed; link manually with 'npm run dev:link'"
+    log "Linking spider into pi (stable shim → ~/.pi/agent/extensions/spider.ts)..."
+    npm run link || warn "spider link failed; link manually with 'npm run link'"
     log "Writing spider-managed AGENTS.md (~/.pi/agent/AGENTS.md)..."
     [ -f "$HOME/.pi/agent/AGENTS.md" ] && cp "$HOME/.pi/agent/AGENTS.md" "$HOME/.pi/agent/AGENTS.md.bak"
     npx --yes tsx -e 'import("./packages/superpowers/src/agentsmd.ts").then(async (m) => { const os = await import("node:os"); const p = os.homedir() + "/.pi/agent/AGENTS.md"; console.log("AGENTS.md:", m.writeAgentsMd(p).action); }).catch((e) => { console.error(String(e)); process.exit(1); })' \
