@@ -39,19 +39,19 @@ have() { command -v "$1" >/dev/null 2>&1; }
 
 # ---------------------------------------------------------------------------
 ensure_node() {
-  local need=22  # spider requires Node >= 22.19 (better-sqlite3 / sqlite-vec native)
+  local need=24  # spider pins node 24 (volta); native better-sqlite3 must match pi's ABI 137
   if have node && have npm; then
     local major; major="$(node -v | sed 's/^v//; s/\..*//')"
     if [ "${major:-0}" -ge "$need" ]; then log "node present: $(node -v)"; return; fi
-    warn "node $(node -v) is older than v${need} (spider needs >= v22.19); installing a newer Node"
+    warn "node $(node -v) is older than v${need} (spider builds under node ${need}); installing a newer Node"
   else
     log "Node/npm not found; installing Node >= v${need} the regular way (system package manager)..."
   fi
   if have brew; then brew install node
-  elif have apt-get; then curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash - && sudo apt-get install -y nodejs
-  elif have dnf; then curl -fsSL https://rpm.nodesource.com/setup_22.x | sudo -E bash - && sudo dnf install -y nodejs
+  elif have apt-get; then curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash - && sudo apt-get install -y nodejs
+  elif have dnf; then curl -fsSL https://rpm.nodesource.com/setup_24.x | sudo -E bash - && sudo dnf install -y nodejs
   elif have pacman; then sudo pacman -Sy --noconfirm nodejs npm
-  elif have zypper; then sudo zypper install -y nodejs22 || sudo zypper install -y nodejs
+  elif have zypper; then sudo zypper install -y nodejs24 || sudo zypper install -y nodejs
   elif have apk; then sudo apk add --no-cache nodejs npm
   else warn "No supported package manager found. Install Node >= v${need} from https://nodejs.org and re-run."; exit 1
   fi
